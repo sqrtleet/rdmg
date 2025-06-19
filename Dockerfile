@@ -28,9 +28,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем код FastAPI
 COPY app/ .
 
-# Копируем собранный фронтенд в папку static приложения
-COPY --from=frontend-builder /app/client/dist/ ./static/
-
 # Экспонируем порт
 EXPOSE 8000
 
