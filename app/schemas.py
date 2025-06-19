@@ -1,9 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel, HttpUrl, Base64Str, Field
-from enum import Enum
 
 from app.models import Category, DamageClass
-
 
 class DefectBase(BaseModel):
     image: str

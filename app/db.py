@@ -8,7 +8,6 @@ from beanie import init_beanie
 from app.config import settings
 from app.models import Defect
 
-
 class DecimalCodec(TypeCodec):
     python_type = Decimal
     bson_type = Decimal128
@@ -19,9 +18,7 @@ class DecimalCodec(TypeCodec):
     def transform_bson(self, value: Decimal128) -> Decimal:
         return value.to_decimal()
 
-
 codec_options = CodecOptions(type_registry=TypeRegistry([DecimalCodec()]))
-
 
 async def connect_to_mongo():
     client = AsyncIOMotorClient(settings.mongodb_url)

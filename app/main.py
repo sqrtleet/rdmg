@@ -7,12 +7,10 @@ from starlette.staticfiles import StaticFiles
 from defects import router as defects_router
 from app.db import connect_to_mongo
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_to_mongo()
     yield
-
 
 app = FastAPI(title='Rdmg API', lifespan=lifespan)
 

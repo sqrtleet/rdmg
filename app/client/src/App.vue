@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <!-- Фильтры и поиск -->
     <div class="controls">
       <label>
         Категория:
@@ -33,7 +32,6 @@
       </label>
       <button @click="resetFilters">Сбросить фильтры</button>
     </div>
-
     <div class="main">
       <!-- Карта -->
       <div id="map"></div>
@@ -55,8 +53,6 @@
         </ul>
       </div>
     </div>
-
-    <!-- Детальная карточка -->
     <div
         class="detail-card"
         v-if="selectedDefect"
@@ -113,7 +109,6 @@ import {ref, reactive, computed, onMounted, watch} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// Состояние
 const defects = ref([])
 const selectedDefect = ref(null)
 const filters = reactive({
@@ -123,7 +118,6 @@ const filters = reactive({
 })
 const searchId = ref('')
 
-// Инициализация карты и маркеров
 let map, markerGroup
 
 onMounted(async () => {
@@ -135,24 +129,20 @@ onMounted(async () => {
   await loadDefects()
 })
 
-// Загрузка всех дефектов
 async function loadDefects() {
   const res = await fetch('/api/defects/')
   defects.value = await res.json()
 }
 
-// Цвет маркера по категории
 function getColor(d) {
   if (d.category === 'pothole') return 'crimson'
   if (d.category === 'crack') return 'darkorange'
   return 'gray'
 }
 
-// Вычисляемый список с учётом фильтров и поиска по ID
 const displayedDefects = computed(() => {
   let list = defects.value
 
-  // Поиск по ID
   if (searchId.value.trim()) {
     list = list.filter(d => d.id.includes(searchId.value.trim()))
   } else {
@@ -166,7 +156,6 @@ const displayedDefects = computed(() => {
   return list
 })
 
-// Обновляем маркеры на карте при изменении списка
 watch(displayedDefects, list => {
   markerGroup.clearLayers()
   list.forEach(d => {
@@ -184,13 +173,11 @@ watch(displayedDefects, list => {
   })
 }, {immediate: true})
 
-// Выбор дефекта
 function selectDefect(d) {
-  selectedDefect.value = {...d}   // создаём копию для редактирования
+  selectedDefect.value = {...d}
   map.setView([d.latitude, d.longitude])
 }
 
-// Сброс фильтров и поиска
 function resetFilters() {
   filters.category = ''
   filters.damage_class = ''
@@ -198,12 +185,10 @@ function resetFilters() {
   searchId.value = ''
 }
 
-// Закрыть карточку
 function closeDetail() {
   selectedDefect.value = null
 }
 
-// Сохранение изменений (PATCH)
 async function saveDefect() {
   const d = selectedDefect.value
   await fetch(`/api/defects/${d.id}`, {
@@ -223,7 +208,6 @@ async function saveDefect() {
   alert('Сохранено')
 }
 
-// Удаление (DELETE)
 async function deleteDefect() {
   const id = selectedDefect.value.id
   await fetch(`/api/defects/${id}`, {method: 'DELETE'})

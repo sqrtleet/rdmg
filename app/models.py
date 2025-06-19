@@ -1,6 +1,5 @@
 from enum import Enum
-from beanie import Document, PydanticObjectId
-from bson import Decimal128
+from beanie import Document
 
 
 class Category(str, Enum):
