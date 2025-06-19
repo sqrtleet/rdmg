@@ -9,7 +9,7 @@ services:
       - "80:8000"
     environment:
       - MONGODB_URL=mongodb://mongo:27017
-      - DATABASE_NAME=defects_db
+      - DATABASE_NAME=rdmg
     depends_on:
       - mongo
 

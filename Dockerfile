@@ -1,35 +1,30 @@
-# ---- Сборка фронтенда ----
+# 1) Стадия сборки фронтенда (Vue)
 FROM node:18-alpine AS frontend-builder
-WORKDIR /app/client
+WORKDIR /srv/client
 
-# Сначала копируем package.json и package-lock.json для кэша npm install
 COPY app/client/package*.json ./
 RUN npm ci
 
-# Копируем весь код клиента и собираем
 COPY app/client/ .
-RUN npm run build   # результат в app/client/dist
+RUN npm run build
 
-# ---- Сборка бэкенда ----
+# 2) Стадия сборки бэкенда (FastAPI)
 FROM python:3.11-slim
 
-# Устанавливаем зависимости системы (если нужны libjpeg, ... — добавьте сюда)
+# если нужны какие-то системные либы, добавьте их тут
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-      build-essential \
+ && apt-get install -y --no-install-recommends build-essential \
  && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /srv
 
-# Копируем зависимости Python
-COPY app/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Копируем весь код проекта, сохранив структуру
+COPY . .
 
-# Копируем код FastAPI
-COPY app/ .
+# Устанавливаем Python-зависимости
+RUN pip install --no-cache-dir -r app/requirements.txt
 
-# Экспонируем порт
 EXPOSE 8000
 
-# Запуск Uvicorn
+# Запускаем Uvicorn по модулю main.py в корне /srv
 CMD ["uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
